@@ -26,6 +26,10 @@ interface QuotaUsageRow {
   used: number;
 }
 
+export const QUOTA_USAGE_RETENTION_DAYS = 90;
+const QUOTA_USAGE_PURGE_BATCH_SIZE = 1_000;
+const QUOTA_USAGE_PURGE_MAX_BATCHES = 10;
+
 /** UTC calendar windows: day, Monday-start week, or calendar month. */
 export function quotaWindowFor(period: QuotaPeriod, now = new Date()): QuotaWindow {
   const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
@@ -126,4 +130,31 @@ export async function consumeQuota(
     resetsAt: window.end,
     ...(allowed ? {} : { reason: 'limit_reached' as const }),
   };
+}
+
+/** Remove quota counters only after their usage window has ended and aged out. */
+export async function purgeExpiredQuotaUsage(
+  db: D1Database,
+  now = new Date(),
+): Promise<{ deleted: number; cutoff: string }> {
+  const cutoff = new Date(now.getTime() - QUOTA_USAGE_RETENTION_DAYS * 24 * 60 * 60 * 1000).toISOString();
+  let deleted = 0;
+
+  for (let batch = 0; batch < QUOTA_USAGE_PURGE_MAX_BATCHES; batch += 1) {
+    const result = await db.prepare(`
+      DELETE FROM tenant_quota_usage
+      WHERE rowid IN (
+        SELECT rowid
+        FROM tenant_quota_usage
+        WHERE window_end <= ?
+        LIMIT ?
+      )
+    `).bind(cutoff, QUOTA_USAGE_PURGE_BATCH_SIZE).run();
+    const changes = result.meta?.changes ?? 0;
+    deleted += changes;
+
+    if (changes < QUOTA_USAGE_PURGE_BATCH_SIZE) break;
+  }
+
+  return { deleted, cutoff };
 }

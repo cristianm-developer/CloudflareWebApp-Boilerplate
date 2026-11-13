@@ -8,6 +8,7 @@
     "node": ">=22.14.0"
   },
   "scripts": {
+    "preinstall": "node -e \"if (!process.env.npm_config_user_agent?.startsWith('pnpm/')) { console.error('This repository uses pnpm. Run: pnpm install'); process.exit(1); }\"",
     "dev": "pnpm --filter @boilerplate/web dev",
     "build": "pnpm --filter @boilerplate/web build",
     "preview": "pnpm --filter @boilerplate/web preview",

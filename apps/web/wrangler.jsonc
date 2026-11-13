@@ -1,7 +1,7 @@
 {
   "$schema": "../../node_modules/wrangler/config-schema.json",
   "name": "replace-with-project-name",
-  "main": "@astrojs/cloudflare/entrypoints/server",
+  "main": "./src/worker.ts",
   "compatibility_date": "2026-11-12",
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
@@ -9,6 +9,7 @@
     "binding": "ASSETS"
   },
   "observability": { "enabled": true },
+  "triggers": { "crons": ["15 3 * * *"] },
   "vars": { "APP_ENV": "production" },
   "d1_databases": [
     {

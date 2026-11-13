@@ -1,18 +1,59 @@
+# Node.js dependencies and package-manager state
 node_modules/
-packages/cli/template/
-.astro/
-.wrangler/
+.pnpm-store/
+.npm/
+
+# Build output and release artifacts
 dist/
 build/
+out/
+release/
+releases/
+.output/
+target/
+packages/cli/template/
+
+# Tool caches and generated metadata
+.astro/
+.wrangler/
+.cache/
+.turbo/
+.vite/
+*.tsbuildinfo
+coverage/
+test-results/
+playwright-report/
+
+# Local configuration and credentials
 .env
 .env.*
 !.env.example
 .dev.vars
 .dev.vars.*
 !.dev.vars.example
+
+# Flutter, Dart and Android generated files
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
-coverage/
+.pub-cache/
+.pub/
+.gradle/
+**/android/.gradle/
+**/ios/Pods/
+**/ios/Flutter/ephemeral/
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Runner/GeneratedPluginRegistrant.*
+**/android/key.properties
+*.jks
+*.keystore
+*.aab
+*.apk
+*.ipa
+
+# OS/editor leftovers
 .DS_Store
 Thumbs.db
+*.log
+*.swp

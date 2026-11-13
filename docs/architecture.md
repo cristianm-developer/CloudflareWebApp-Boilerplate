@@ -23,7 +23,7 @@ packages/
 apps/mobile/               # wrapper Flutter opcional
 ```
 
-El módulo `api/modules/quotas` lleva consumo de producto por tenant y capability, con ventanas UTC diarias, semanales o mensuales y contadores D1 atómicos. El módulo billing sincroniza políticas de cuota a partir del plan activo y conserva políticas manuales/add-ons. El rate limit de Cloudflare protege requests; las cuotas miden uso funcional.
+El módulo `api/modules/quotas` lleva consumo de producto por tenant y capability, con ventanas UTC diarias, semanales o mensuales y contadores D1 atómicos. Las filas de uso se retienen 90 días desde el fin de su ventana y un Cron Trigger diario las purga en lotes acotados usando el D1 enlazado a cada despliegue. El módulo billing sincroniza políticas de cuota a partir del plan activo y conserva políticas manuales/add-ons. El rate limit de Cloudflare protege requests; las cuotas miden uso funcional.
 
 Cada módulo separa rutas/handlers, esquemas, servicios, repositorios y políticas. Las rutas convierten HTTP en llamadas de aplicación; los servicios aplican reglas y orquestan; los repositorios encapsulan D1. La UI no contiene reglas de autorización. El CLI deja registrados como planeados los módulos opcionales aún sin scaffold.
 
