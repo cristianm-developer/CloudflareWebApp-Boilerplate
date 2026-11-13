@@ -1,0 +1,46 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "replace-with-project-name",
+  "main": "@astrojs/cloudflare/entrypoints/server",
+  "compatibility_date": "2026-11-12",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS"
+  },
+  "observability": { "enabled": true },
+  "vars": { "APP_ENV": "production" },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "replace-with-production-database",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "../../migrations"
+    }
+  ],
+  "r2_buckets": [
+    { "binding": "FILES", "bucket_name": "replace-with-production-bucket" }
+  ],
+  "ratelimits": [
+    { "name": "API_RATE_LIMITER", "namespace_id": "1074382917", "simple": { "limit": 120, "period": 60 } },
+    { "name": "AUTH_RATE_LIMITER", "namespace_id": "1948242619", "simple": { "limit": 15, "period": 60 } }
+  ],
+  "previews": {
+    "vars": { "APP_ENV": "stage" },
+    "d1_databases": [
+      {
+        "binding": "DB",
+        "database_name": "replace-with-stage-database",
+        "database_id": "00000000-0000-0000-0000-000000000000",
+        "migrations_dir": "../../migrations"
+      }
+    ],
+    "r2_buckets": [
+      { "binding": "FILES", "bucket_name": "replace-with-stage-bucket" }
+    ],
+    "ratelimits": [
+      { "name": "API_RATE_LIMITER", "namespace_id": "786499421", "simple": { "limit": 120, "period": 60 } },
+      { "name": "AUTH_RATE_LIMITER", "namespace_id": "1475330723", "simple": { "limit": 15, "period": 60 } }
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "sample-app",
+  "domain": "app.example.com",
+  "modules": ["stripe", "openrouter", "resend"],
+  "cloudflare": {
+    "workerName": "sample-app",
+    "accountId": "",
+    "productionBranch": "main",
+    "previewBranches": ["stage"],
+    "productionDatabase": "sample-app-production",
+    "stageDatabase": "sample-app-stage",
+    "productionBucket": "sample-app-production",
+    "stageBucket": "sample-app-stage"
+  }
+}

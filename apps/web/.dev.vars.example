@@ -1,0 +1,48 @@
+# Wrangler local Worker variables. This is the copy beside wrangler.jsonc.
+# Copy it to apps/web/.dev.vars; never commit that file. Use isolated credentials per environment.
+
+# Runtime mode: development locally; stage for Preview; production for Production.
+APP_ENV=development
+
+# Better Auth (required). Local origin here; deployed environments need their own HTTPS URL.
+BETTER_AUTH_URL=http://localhost:4321
+# Random secret, at least 32 bytes. Generate independently per environment; never reuse the tenant secret.
+BETTER_AUTH_SECRET=
+# Optional trusted origins; comma-separated exact app origins only.
+BETTER_AUTH_TRUSTED_ORIGINS=
+
+# Active-tenant context JWT signing secret (required, >=32 bytes, unique per environment).
+# Server-only; never expose this value to browser code.
+TENANT_CONTEXT_SECRET=
+
+# Google OAuth (optional; set both values together to enable it).
+# Web OAuth callback URL: <BETTER_AUTH_URL>/api/auth/callback/google
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+
+# Stripe return/canonical URL. HTTPS outside local development; falls back to BETTER_AUTH_URL.
+APP_BASE_URL=http://localhost:4321
+
+# Resend email (optional). Verify sender/domain in the same Resend account as the API key.
+RESEND_API_KEY=
+RESEND_FROM=
+
+# OpenRouter (optional). API key stays server-side; URL/title are optional request metadata.
+OPENROUTER_API_KEY=
+OPENROUTER_SITE_URL=http://localhost:4321
+OPENROUTER_SITE_NAME=Your project name
+
+# Stripe (optional). Use test-mode keys locally/stage and live keys only in Production.
+# Webhook secret is the signing secret for the configured webhook endpoint, not the API key.
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+
+# Google Play subscriptions (optional). Service account JSON needs Android Publisher API access.
+# Provide the complete JSON document on one line, escaped/quoted as Wrangler .dev.vars requires.
+GOOGLE_PLAY_SERVICE_ACCOUNT_JSON=
+# Exact Android application ID, e.g. com.example.app.
+GOOGLE_PLAY_PACKAGE_NAME=
+# Pub/Sub RTDN push auth. Audience must exactly match the configured push URL.
+GOOGLE_PUBSUB_AUDIENCE=
+# OIDC service account email configured by Pub/Sub for authenticated push delivery.
+GOOGLE_PUBSUB_SERVICE_ACCOUNT_EMAIL=

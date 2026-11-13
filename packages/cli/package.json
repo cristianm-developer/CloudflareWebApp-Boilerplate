@@ -1,0 +1,24 @@
+{
+  "name": "@cloudflare-apps/cli",
+  "version": "0.1.0",
+  "description": "Project generator and interactive configurator for the Cloudflare Apps boilerplate",
+  "type": "module",
+  "bin": {
+    "cf-apps": "./src/cli.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "project-config.example.json",
+    "template"
+  ],
+  "scripts": {
+    "check": "node --check src/cli.js",
+    "help": "node src/cli.js --help",
+    "prepack": "node scripts/build-template.js"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "projectName": "cloudflare-apps-boilerplate",
+  "coreModules": [
+    "auth",
+    "tenants",
+    "permissions",
+    "quotas",
+    "admin"
+  ],
+  "modules": [],
+  "plannedModules": [],
+  "cloudflare": {
+    "productionBranch": "main",
+    "previewBranches": [
+      "stage"
+    ],
+    "rateLimitNamespaces": {
+      "production": {
+        "api": "1074382917",
+        "auth": "1948242619"
+      },
+      "preview": {
+        "api": "786499421",
+        "auth": "1475330723"
+      }
+    },
+    "workerStrategy": "single-worker-branch-previews",
+    "isolatedBindings": [
+      "DB",
+      "FILES"
+    ]
+  }
+}

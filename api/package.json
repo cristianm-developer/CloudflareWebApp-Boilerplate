@@ -1,0 +1,17 @@
+{
+  "name": "@boilerplate/api",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./router": "./router.ts",
+    "./env": "./env.ts"
+  },
+  "dependencies": {
+    "@boilerplate/contracts": "workspace:*",
+    "better-auth": "^1.7.22",
+    "drizzle-orm": "^0.45.4",
+    "hono": "^4.9.0",
+    "jose": "^6.2.0",
+    "zod": "^4.1.0"
+  }
+}

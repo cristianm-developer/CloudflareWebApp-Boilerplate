@@ -1,0 +1,14 @@
+---
+import '../styles/global.css';
+const { title = 'Cloudflare Apps Boilerplate' } = Astro.props;
+---
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f8fafc" />
+    <title>{title}</title>
+  </head>
+  <body><slot /></body>
+</html>

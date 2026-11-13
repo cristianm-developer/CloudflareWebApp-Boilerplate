@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/base.astro';
+import { Counter } from '../components/counter';
+---
+<Base>
+  <main class="mx-auto flex min-h-screen max-w-5xl flex-col justify-center px-6 py-20">
+    <p class="mb-5 inline-flex w-fit items-center gap-2 rounded-full bg-brand-50 px-4 py-2 text-sm font-semibold text-brand-700">
+      <span class="size-2 rounded-full bg-emerald-500"></span> Astro SSR · Cloudflare Workers
+    </p>
+    <h1 class="max-w-3xl text-5xl font-bold tracking-tight sm:text-6xl">Tu próximo producto empieza con una base clara.</h1>
+    <p class="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
+      Un monolito modular con Astro, Preact y Hono. Activa los módulos que cada proyecto necesita desde el CLI.
+    </p>
+    <div class="mt-9 flex flex-wrap items-center gap-5"><Counter client:load /><a href="/login" class="rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-700">Probar el acceso</a></div>
+    <div class="mt-16 grid gap-4 sm:grid-cols-3">
+      <article class="rounded-card border border-slate-200 bg-white p-6 shadow-sm"><h2 class="font-semibold">Un Worker</h2><p class="mt-2 text-sm leading-6 text-slate-600">SSR, app web y API Hono en un único deploy.</p></article>
+      <article class="rounded-card border border-slate-200 bg-white p-6 shadow-sm"><h2 class="font-semibold">Tenant de primera clase</h2><p class="mt-2 text-sm leading-6 text-slate-600">Sesión y contexto de tenant se validan en el servidor.</p></article>
+      <article class="rounded-card border border-slate-200 bg-white p-6 shadow-sm"><h2 class="font-semibold">Módulos activables</h2><p class="mt-2 text-sm leading-6 text-slate-600">Billing, IA, correo y Flutter se agregan cuando hacen falta.</p></article>
+    </div>
+  </main>
+</Base>

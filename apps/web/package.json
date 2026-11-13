@@ -1,0 +1,41 @@
+{
+  "name": "@boilerplate/web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev --host 0.0.0.0",
+    "build": "astro build",
+    "preview": "astro preview --host 0.0.0.0",
+    "deploy": "astro build && wrangler deploy",
+    "typecheck": "astro check",
+    "cf:types": "wrangler types",
+    "db:bootstrap:local": "wrangler d1 migrations apply DB --local",
+    "db:migrate:local": "wrangler d1 migrations apply DB --local",
+    "db:migrate:remote": "wrangler d1 migrations apply DB --remote"
+  },
+  "dependencies": {
+    "@boilerplate/api": "workspace:*",
+    "@astrojs/cloudflare": "^14.4.7",
+    "@astrojs/preact": "^6.1.5",
+    "@tailwindcss/vite": "^4.1.0",
+    "@tanstack/preact-query": "^5.0.0",
+    "axios": "^1.13.0",
+    "axios-auth-refresh": "^3.3.6",
+    "better-auth": "^1.7.22",
+    "hono": "^4.9.0",
+    "lucide-preact": "^1.72.0",
+    "preact": "^10.27.0",
+    "tailwindcss": "^4.1.0",
+    "zustand": "^5.0.0",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.0",
+    "astro": "^7.4.11",
+    "astro-icon": "^1.2.0",
+    "@types/node": "^22.0.0",
+    "drizzle-kit": "^0.31.11",
+    "typescript": "^5.9.0",
+    "wrangler": "^4.125.0"
+  }
+}

@@ -1,0 +1,13 @@
+---
+import Base from '../layouts/base.astro';
+import { LoginForm } from '../components/login-form';
+---
+
+<Base title="Accede · Cloudflare Apps Boilerplate">
+  <main class="grid min-h-screen place-items-center bg-slate-50 px-5 py-12">
+    <div class="w-full max-w-md">
+      <a href="/" class="mb-6 inline-flex text-sm font-semibold text-brand-700 hover:underline">← Inicio</a>
+      <LoginForm client:load />
+    </div>
+  </main>
+</Base>

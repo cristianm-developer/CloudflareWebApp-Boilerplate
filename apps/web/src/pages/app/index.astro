@@ -1,0 +1,10 @@
+---
+import Base from '../../layouts/base.astro';
+import { AppHome } from '../../components/app-home';
+---
+
+<Base title="App · Cloudflare Apps Boilerplate">
+  <main class="grid min-h-screen place-items-center bg-slate-50 px-5 py-12">
+    <AppHome client:only="preact" />
+  </main>
+</Base>

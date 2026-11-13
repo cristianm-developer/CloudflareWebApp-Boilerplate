@@ -1,0 +1,24 @@
+{
+  "name": "cloudflare-apps-boilerplate",
+  "private": true,
+  "version": "0.1.0",
+  "license": "MIT",
+  "packageManager": "pnpm@10.22.0",
+  "engines": {
+    "node": ">=22.14.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @boilerplate/web dev",
+    "build": "pnpm --filter @boilerplate/web build",
+    "preview": "pnpm --filter @boilerplate/web preview",
+    "deploy": "pnpm --filter @boilerplate/web deploy",
+    "typecheck": "pnpm --filter @boilerplate/web typecheck",
+    "cli": "cf-apps",
+    "test": "vitest run",
+    "check": "pnpm typecheck && pnpm build"
+  },
+  "devDependencies": {
+    "@cloudflare-apps/cli": "workspace:*",
+    "vitest": "^5.1.0"
+  }
+}
