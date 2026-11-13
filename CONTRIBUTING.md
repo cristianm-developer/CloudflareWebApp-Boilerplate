@@ -1,20 +1,20 @@
-# Contribuir
+# Contributing
 
-Gracias por ayudar a mejorar Cloudflare Apps Boilerplate. Los cambios pequeños, documentados y fáciles de revisar son los más sencillos de integrar.
+Thanks for helping improve Cloudflare Apps Boilerplate. Small, documented changes that are easy to review are the simplest to integrate.
 
-## Antes de empezar
+## Before you start
 
-- Revisa [README.md](README.md), [docs/architecture.md](docs/architecture.md) y la guía del módulo que vas a modificar.
-- Para cambios grandes, abre primero una discusión o issue con el problema y el enfoque propuesto.
-- No incluyas secretos, tokens, credenciales de servicio, archivos `.dev.vars` ni datos de producción.
+- Read the [README](README.md), [architecture guide](docs/architecture.md), and the guide for the module you plan to change.
+- For larger changes, open a discussion or issue first to describe the problem and proposed approach.
+- Never include secrets, tokens, service credentials, `.dev.vars` files, or production data.
 
-## Flujo de trabajo
+## Workflow
 
-1. Crea una rama desde `main`.
-2. Instala dependencias con `pnpm install`.
-3. Implementa el cambio siguiendo la estructura modular existente y valida entradas con los contratos compartidos cuando corresponda.
-4. Añade o actualiza pruebas para comportamiento nuevo o corregido.
-5. Ejecuta las verificaciones aplicables:
+1. Create a branch from `main`.
+2. Install dependencies with `pnpm install`.
+3. Make the change within the existing modular structure and validate inputs with shared contracts where appropriate.
+4. Add or update tests for new or corrected behavior.
+5. Run the applicable checks:
 
    ```bash
    pnpm test
@@ -22,24 +22,24 @@ Gracias por ayudar a mejorar Cloudflare Apps Boilerplate. Los cambios pequeños,
    pnpm --dir packages/cli check
    ```
 
-6. Abre un pull request con el motivo del cambio, resumen de implementación, verificaciones ejecutadas y cualquier limitación o configuración manual requerida.
+6. Open a pull request describing the motivation, implementation, checks performed, and any limitations or manual setup required.
 
-No ejecutes migraciones remotas, crees recursos facturables ni despliegues a cuentas compartidas como parte de una contribución sin autorización explícita del titular de esas cuentas.
+Do not run remote migrations, create billable resources, or deploy to shared accounts as part of a contribution without explicit authorization from the account owner.
 
-## Cambios en API e identidad
+## API and identity changes
 
-- Los handlers y servicios multi-tenant deben consumir el contexto autorizado que construye el middleware; no autorices una operación usando un `tenantId` sin verificar enviado por el cliente.
-- Mantén los endpoints admin bajo autenticación, tenant activo y permisos del backend.
-- No registres secretos, cookies, JWT, tokens de compra ni payloads sensibles.
-- Los ejemplos de configuración deben explicar qué necesita cada variable sin incluir valores reales.
-- Cambios de esquema requieren una migración nueva y documentar cómo aplicarla en local, Preview y producción.
+- Multi-tenant handlers and services must use the authorized context created by middleware. Do not authorize an operation using an unverified `tenantId` sent by the client.
+- Keep admin endpoints behind authentication, an active tenant, and backend permission checks.
+- Do not log secrets, cookies, JWTs, purchase tokens, or sensitive payloads.
+- Configuration examples should explain what each variable needs without including real values.
+- Schema changes require a new migration and instructions for applying it locally, in Preview, and in production.
 
-## Estilo y alcance
+## Scope and style
 
-- Mantén cada módulo cohesivo y evita duplicar componentes, validaciones o lógica compartida.
-- Actualiza documentación cuando cambien comandos, variables, endpoints o decisiones de arquitectura.
-- No amplíes el alcance de un cambio sin explicar por qué en el pull request.
+- Keep each module cohesive and avoid duplicating shared components, validation, or logic.
+- Update documentation when commands, variables, endpoints, or architecture decisions change.
+- Explain any scope expansion in the pull request.
 
-## Reconocimiento
+## Contributor credits
 
-La autoría de commits y pull requests se conserva en el historial del repositorio. Si quieres aparecer con un nombre o enlace en la lista pública, sigue las instrucciones de [CONTRIBUTORS.md](CONTRIBUTORS.md).
+Commit and pull request authorship remains in the repository history. If you want a public name or link in the contributor list, follow [`CONTRIBUTORS.md`](CONTRIBUTORS.md).

@@ -1,29 +1,65 @@
 # Cloudflare Apps Boilerplate
 
-Boilerplate open source para crear aplicaciones SaaS sobre Cloudflare Workers. Reúne landing y SSR con Astro, interfaz interactiva con Preact y API con Hono en un Worker, con una arquitectura modular que puedes adaptar a cada producto.
+> Hi, welcome to my boilerplate! I built it because I kept repeating the same system for my apps. This is my personal boilerplate, and I’m sharing it in case it helps you get your projects moving faster. Good luck!
 
-Está pensado para servir como base de nuevos proyectos, no como un SaaS terminado. Los proveedores son opcionales y cada proyecto debe configurar sus propios dominios, secretos, planes, productos, políticas de acceso y recursos.
+This repository is a modular starting point for SaaS applications built on Cloudflare Workers. It combines an Astro website and server-side rendering, interactive Preact components, and a Hono API in one Worker. It is a foundation to adapt for your product, not a finished SaaS. Each project must configure its own domains, secrets, plans, access rules, provider accounts, and Cloudflare resources.
 
-## Qué incluye
+## What’s included
 
-- **Web y API:** Astro SSR, Preact, Hono, Tailwind CSS, TanStack Query, Zustand, Axios y Zod.
-- **Identidad:** Better Auth con sesión persistida en D1, email/password y Google OAuth opcional.
-- **Tenancy y permisos:** tenant personal y organizaciones; JWT secundario de tenant vinculado a la sesión y revalidado en cada solicitud protegida.
-- **Administración:** gestión del tenant, miembros y billing; Health Check de configuración visible solo para administradores del tenant.
-- **Cloudflare:** Worker, D1, R2 y rate limiting con Wrangler para desarrollo local y Previews.
-- **Integraciones opcionales:** Stripe, Google Play Billing/RTDN, OpenRouter y Resend.
-- **Móvil opcional:** app Flutter con WebView y puente acotado para compras de Google Play.
-- **CLI:** generador y configurador interactivo para crear proyectos, registrar módulos y preparar recursos Cloudflare.
-- **Cuotas:** base extensible para límites diarios, semanales y mensuales con ventanas UTC y contadores D1.
+- **Web and API:** Astro SSR, Preact, Hono, Tailwind CSS, TanStack Query, Zustand, Axios, and Zod.
+- **Authentication:** Better Auth with sessions stored in D1, email/password, and optional Google OAuth.
+- **Tenants and permissions:** personal tenants and organizations, with a short-lived tenant context token and server-side membership checks on protected requests.
+- **Administration:** tenant, member, and billing views, plus a configuration health check for tenant administrators.
+- **Cloudflare:** a Worker, D1, R2, and rate limiting configured with Wrangler for local development and Previews.
+- **Optional integrations:** Stripe, Google Play Billing/RTDN, OpenRouter, and Resend.
+- **Optional mobile app:** a Flutter WebView shell with a limited bridge for Google Play purchases.
+- **CLI:** `cf-apps` creates and configures projects, tracks optional modules, and can prepare Cloudflare resources when explicitly requested.
+- **Product quotas:** an extensible D1-backed foundation for daily, weekly, and monthly usage limits.
 
-## Requisitos
+## Requirements
 
-- Node.js **22.14 o superior**
+- Node.js **22.14 or later**
 - pnpm **10**
-- Cuenta de Cloudflare para provisionar recursos o desplegar
-- Flutter solo si usarás la app móvil
+- A Cloudflare account only when you are ready to provision Cloudflare resources or deploy
+- Flutter only if you plan to use the mobile app
 
-## Inicio rápido
+## Create your own project
+
+The recommended flow is to clone this boilerplate, install its dependencies, and let `cf-apps create` generate a clean project in a separate directory. The generated project is independent of the boilerplate checkout.
+
+```bash
+git clone <BOILERPLATE_REPOSITORY_URL> cloudflare-apps-boilerplate
+cd cloudflare-apps-boilerplate
+pnpm install
+pnpm cli --help
+pnpm cli create ../my-app --name my-app --domain app.example.com --modules stripe,resend
+```
+
+Replace the repository URL, project name, domain, and module list with your own values. Omit `--modules` if you do not need optional integrations. The CLI uses the workspace copy of `cf-apps`, so you do not need to install it globally. The destination must be a new directory outside the boilerplate repository.
+
+Then set up and inspect the generated project:
+
+```bash
+cd ../my-app
+pnpm install
+pnpm cli doctor
+pnpm --filter @boilerplate/web db:bootstrap:local
+pnpm dev
+```
+
+Open `http://localhost:4321`; the API health route is `GET /api/health`. Visit `/login` to try the sign-in flow. The `/admin` page requires a signed-in user with administrator permissions in the active tenant. Review the generated `.boilerplate.json`, `apps/web/wrangler.jsonc`, and environment examples before adding provider credentials or deploying.
+
+### Ask an AI agent to create it for you
+
+An AI coding agent can collect the project details, create the configuration, run the CLI, install dependencies, and run `cf-apps doctor`. Open the boilerplate repository in your coding agent and ask it something like:
+
+> Create a new project from this Cloudflare Apps boilerplate in `../my-app`. Name it `my-app`, use `app.example.com` as the production domain, and enable Stripe and Resend. Follow `docs/ai-project-creation.md` and the configuration schema. Ask me for any missing project choices. Do not create or provision Cloudflare resources. After generation, install dependencies, run `cf-apps doctor`, and summarize any remaining manual setup. Never put credentials or secrets in the project config.
+
+The agent should use `cf-apps create` rather than copying files manually. Project generation does not imply permission to create Cloudflare resources. Resource provisioning requires a separate, explicit request. See [Creating projects with an AI agent](docs/ai-project-creation.md) for the complete workflow and a reusable prompt.
+
+## Run this boilerplate checkout locally
+
+To work on the boilerplate itself instead of generating a separate project:
 
 ```bash
 pnpm install
@@ -31,42 +67,35 @@ pnpm --filter @boilerplate/web db:bootstrap:local
 pnpm dev
 ```
 
-En un proyecto creado con el CLI, `init` prepara `.boilerplate.json` y, si aún no existe, `apps/web/.dev.vars` con secretos aleatorios para desarrollo local. En este repositorio, el manifiesto ya está configurado. Revisa [`.env.example`](.env.example) para variables públicas y [`apps/web/.dev.vars.example`](apps/web/.dev.vars.example) para configuración local del Worker. Nunca copies secretos a `.env` ni los agregues a Git.
+The starter repository already has its boilerplate configuration. Review [`.env.example`](.env.example) for public variables and [`apps/web/.dev.vars.example`](apps/web/.dev.vars.example) for local Worker settings. In a generated project, `cf-apps create` prepares `.boilerplate.json` and, if missing, `apps/web/.dev.vars` with random local authentication secrets. Never put secret values in `.env` or commit them to Git. The local `.dev.vars` file is Git-ignored.
 
-La landing se sirve en `http://localhost:4321`; la API incluye `GET /api/health`. Para probar el acceso, abre `/login`. La vista `/admin` requiere iniciar sesión y tener permisos de administración en el tenant activo.
+## CLI commands
 
-## Crear un proyecto nuevo
-
-Desde este repositorio:
+Run these commands from the boilerplate workspace or a generated project where the CLI package is installed:
 
 ```bash
-pnpm cli create ../mi-proyecto
+pnpm cli create ../my-app --name my-app --domain app.example.com
+pnpm cli init
+pnpm cli add stripe
+pnpm cli doctor
+pnpm cli resources
 ```
 
-El CLI copia una plantilla limpia, excluye secretos y archivos generados, configura el nombre y prepara el proyecto. También puedes usar `init`, `add`, `resources` y `doctor` en un proyecto existente:
+`create` generates a clean project in a new directory. `init` configures the current directory. `add` records or activates an optional module when its implementation is present. `doctor` checks local files and configuration. `resources` can inspect or create D1 databases and R2 buckets through authenticated Wrangler. Creating resources is a separate Cloudflare action and should only happen when explicitly requested. See the [CLI guide](packages/cli/README.md) and [configuration example](packages/cli/project-config.example.json).
 
-```bash
-pnpm exec cf-apps init
-pnpm exec cf-apps add stripe
-pnpm exec cf-apps doctor
-pnpm exec cf-apps resources
-```
+## Environments and deployment
 
-`doctor` revisa la configuración local. `resources` usa Wrangler autenticado para verificar o crear D1 y R2; requiere que confirmes el aprovisionamiento. El CLI no guarda credenciales de proveedores. Consulta la [guía del CLI](packages/cli/README.md) y el [formato de configuración de ejemplo](packages/cli/project-config.example.json).
+The starter is configured for one Worker: `main` is production, and branch Previews can include `stage`. Preview uses the Worker Preview configuration with separate D1 and R2 bindings; it is not a separate persistent Worker or a database shared with production. Wrangler local mode uses its own local data.
 
-## Entornos y despliegue
+Before the first deployment:
 
-La configuración está preparada para un Worker con `main` como producción y branch Previews, incluido `stage`, usando bindings separados para D1 y R2. Un Preview no es una base de datos compartida con producción ni un Worker persistente separado: usa la configuración Preview del Worker. El entorno local de Wrangler mantiene sus propios datos.
+1. Replace sample names and IDs in [`apps/web/wrangler.jsonc`](apps/web/wrangler.jsonc).
+2. Create separate D1 databases and R2 buckets for production and Preview.
+3. Configure different secrets for local, Preview, and production in the appropriate stores.
+4. Apply migrations explicitly to each database.
+5. Configure products, plans, credentials, and webhooks for each provider you enable.
 
-Antes del primer despliegue:
-
-1. Reemplaza los nombres e IDs de ejemplo en [`apps/web/wrangler.jsonc`](apps/web/wrangler.jsonc).
-2. Crea recursos D1 y R2 distintos para producción y Preview.
-3. Configura secretos diferentes para local, Preview y producción en el lugar correspondiente.
-4. Aplica explícitamente las migraciones a cada base de datos.
-5. Configura productos, planes, credenciales y webhooks en los proveedores que vayas a usar.
-
-Comandos comunes:
+Common commands:
 
 ```bash
 pnpm --filter @boilerplate/web db:migrate:local
@@ -75,17 +104,17 @@ pnpm check
 pnpm deploy
 ```
 
-`db:migrate:remote` actúa sobre el recurso remoto que Wrangler resuelva desde la configuración actual. Confirma el entorno y el nombre de la base antes de ejecutarlo; no lo uses para sustituir la aplicación explícita de migraciones a cada recurso.
+`db:migrate:remote` uses the remote resource selected by the current Wrangler configuration. Verify the environment and database name before running it, and apply migrations to each isolated database deliberately.
 
-## Identidad y límites de seguridad
+## Identity and security model
 
-Better Auth mantiene la sesión principal en una cookie y D1. Al seleccionar un tenant, el cliente pide al backend un JWT secundario de corta duración. Cada endpoint protegido valida ambos, comprueba que el sujeto del JWT coincide con la sesión y vuelve a consultar en D1 la membresía, el estado, el rol y la versión de permisos. Un `tenantId` elegido en el cliente no concede acceso.
+Better Auth stores the primary session in a cookie and D1. After a user selects a tenant, the client requests a short-lived tenant context JWT. Protected endpoints validate both credentials, verify that the JWT subject matches the session, and re-check membership, status, role, and permission version in D1. A `tenantId` chosen by the browser does not grant access.
 
-Los permisos se aplican en el backend; ocultar controles en la interfaz no sustituye autorización. El rate limiting de Cloudflare protege solicitudes, mientras que las cuotas D1 miden consumo funcional del producto. Webhooks de pago y compras móviles tienen validaciones propias; antes de usarlos en producción, configura y revisa los secretos y recursos de cada proveedor.
+Authorization is enforced by the backend; hiding UI controls is not a substitute. Cloudflare rate limiting protects request volume, while D1 quotas meter product usage. Payment webhooks and mobile purchases have their own validation paths. Configure and review provider secrets and resources before using these integrations in production.
 
-El Health Check del admin solo informa sobre presencia y formato básico de configuración. No contacta proveedores, no consulta D1/R2 y no confirma que las migraciones estén aplicadas. Un estado “Configurado” no es una prueba de disponibilidad o de seguridad integral. Revisa [la arquitectura](docs/architecture.md), [el modelo de cuotas](api/modules/quotas/README.md) y [billing](api/modules/billing/README.md) antes de adaptar los módulos.
+The admin health check reports whether selected bindings and configuration values are present and have a basic valid format. It does not contact providers, query D1/R2, or confirm migrations. A “Configured” status does not prove availability or complete security. Read the [architecture guide](docs/architecture.md), [quota module guide](api/modules/quotas/README.md), and [billing guide](api/modules/billing/README.md) before adapting these modules.
 
-## Desarrollo y contribuciones
+## Development and contributions
 
 ```bash
 pnpm test
@@ -93,8 +122,8 @@ pnpm check
 pnpm --dir packages/cli check
 ```
 
-Las pruebas unitarias no necesitan credenciales de proveedores. Las verificaciones manuales de Cloudflare, OAuth, Stripe y Google Play sí requieren cuentas y configuración aisladas. Lee [`CONTRIBUTING.md`](CONTRIBUTING.md) antes de abrir un cambio. Las personas que quieran aparecer por nombre en el proyecto pueden seguir [`CONTRIBUTORS.md`](CONTRIBUTORS.md).
+Unit tests do not require provider credentials. Manual checks for Cloudflare, OAuth, Stripe, and Google Play require isolated accounts and configuration. Read [`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a change. To opt in to a public name or link in the contributor list, follow [`CONTRIBUTORS.md`](CONTRIBUTORS.md).
 
-## Licencia
+## License
 
-Este proyecto se distribuye bajo la licencia [MIT](LICENSE). Las dependencias y servicios de terceros mantienen sus propias licencias y condiciones.
+This project is distributed under the [MIT License](LICENSE). Third-party dependencies and services have their own licenses and terms.

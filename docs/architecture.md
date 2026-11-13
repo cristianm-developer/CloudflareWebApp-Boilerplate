@@ -1,52 +1,52 @@
-# Arquitectura del boilerplate
+# Boilerplate architecture
 
-## Una aplicación modular en un Worker
+## Modular application in one Worker
 
-Astro sirve landing, app y SSR. Preact se usa para islas interactivas. Un endpoint catch-all de Astro delega `/api/*` a Hono en el mismo Worker y pasa el entorno Cloudflare explícitamente. Los módulos de negocio viven separados por capacidad; no se crean servicios externos por defecto.
+Astro serves the landing page, application pages, and server-side rendered routes. Preact powers interactive islands. An Astro catch-all endpoint forwards `/api/*` requests to Hono in the same Worker and explicitly passes the Cloudflare environment. Business modules are grouped by capability; external services are not created by default.
 
 ```text
 apps/web/src/
-  pages/                  # landing, SSR y rutas Astro
-  components/             # islas Preact reutilizables
-  lib/                    # auth client, HTTP, stores
-  styles/                 # tokens globales de Tailwind
+  pages/                  # Landing page, SSR, and Astro routes
+  components/             # Reusable Preact islands
+  lib/                    # Auth client, HTTP client, and stores
+  styles/                 # Global Tailwind tokens
 api/
-  router.ts               # Hono bajo /api
-  middleware/             # rate limit
+  router.ts               # Hono routes under /api
+  middleware/             # Rate limiting
   modules/
-    auth/ tenants/ quotas/ # sesión, tenant y uso
-    billing/ ai/ email/   # Stripe, Google Play, OpenRouter, Resend
-    admin/                # consola tenant-local
+    auth/ tenants/ quotas/ # Sessions, tenant context, and usage
+    billing/ ai/ email/   # Stripe, Google Play, OpenRouter, and Resend
+    admin/                # Tenant-scoped administration
 packages/
-  contracts/               # contratos Zod
-  cli/                     # CLI init/add/doctor
-apps/mobile/               # wrapper Flutter opcional
+  contracts/              # Shared Zod contracts
+  cli/                    # Project generation and configuration CLI
+apps/mobile/              # Optional Flutter shell
 ```
 
-El módulo `api/modules/quotas` lleva consumo de producto por tenant y capability, con ventanas UTC diarias, semanales o mensuales y contadores D1 atómicos. Las filas de uso se retienen 90 días desde el fin de su ventana y un Cron Trigger diario las purga en lotes acotados usando el D1 enlazado a cada despliegue. El módulo billing sincroniza políticas de cuota a partir del plan activo y conserva políticas manuales/add-ons. El rate limit de Cloudflare protege requests; las cuotas miden uso funcional.
+The `api/modules/quotas` module tracks product usage per tenant and capability, with UTC daily, weekly, or monthly windows and atomic D1 counters. Usage rows are retained until 90 days after their window ends. A daily Cron Trigger removes expired rows in bounded batches from the D1 database bound to that deployment. Billing synchronizes plan quota policies while preserving manual and add-on policies. Cloudflare rate limiting protects request volume; quotas meter product usage.
 
-Cada módulo separa rutas/handlers, esquemas, servicios, repositorios y políticas. Las rutas convierten HTTP en llamadas de aplicación; los servicios aplican reglas y orquestan; los repositorios encapsulan D1. La UI no contiene reglas de autorización. El CLI deja registrados como planeados los módulos opcionales aún sin scaffold.
+Each module separates routes/handlers, schemas, services, repositories, and policies. Routes translate HTTP requests into application calls; services apply rules and orchestrate work; repositories encapsulate D1. The UI does not contain authorization rules. The CLI records optional modules as planned when their implementation is not present in the project scaffold.
 
-## Tenant activo
+## Active tenant context
 
-Better Auth mantiene la sesión primaria. Al seleccionar tenant, el cliente solicita un JWT secundario corto al backend y lo envía en cada request autenticado. El backend valida firma, issuer, audience, expiración y subject, vincula el subject con la sesión, y vuelve a consultar membresía y versión de permisos. Nunca acepta un `tenantId` arbitrario como autorización. Un tenant personal se crea idempotentemente durante el onboarding.
+Better Auth maintains the primary session. After a user selects a tenant, the client requests a short-lived secondary JWT from the backend and sends it with authenticated API requests. The backend validates the signature, issuer, audience, expiration, and subject, binds the subject to the session, and rechecks membership and permission version in D1. A client-supplied `tenantId` is never accepted as authorization. A personal tenant is created idempotently during onboarding.
 
-Use `jose` sobre Web Crypto para JWT. Mantenga en D1 el estado actual de membresía y permisos para poder revocar acceso sin esperar a que expire el token. El token no reemplaza la sesión.
+Use `jose` with Web Crypto for JWT operations. Keep current membership and permissions in D1 so access can be revoked without waiting for a token to expire. The tenant token is bound to context and does not replace the session.
 
-## Permisos
+## Permissions
 
-Permisos son capacidades estables (`members.invite`, `billing.manage`, `records.read`); roles solo agrupan capacidades. Las políticas viven en backend y se invocan desde handlers/servicios. Los componentes pueden ocultar acciones, pero eso nunca concede acceso.
+Permissions are stable capabilities such as `members.invite`, `billing.manage`, and `records.read`; roles group capabilities. Policies live in the backend and are enforced by handlers/services. Components may hide unavailable actions, but that never grants access.
 
-## Entornos Cloudflare
+## Cloudflare environments
 
-Un único Worker: configuración superior para producción y bloque `previews` para Worker Previews. El binding de cada entorno conserva el mismo nombre, pero referencia D1 y R2 independientes. `main` contiene la configuración base que heredan los previews de branches. Las migraciones se aplican explícitamente a cada DB.
+The application uses one Worker: the top-level configuration is production, and the `previews` block configures Worker Previews. Each environment keeps the same binding names but points to independent D1 and R2 resources. The `main` branch supplies the base configuration inherited by branch Previews. Apply migrations explicitly to every database.
 
-Wrangler local usa almacenamiento local. Nunca se usan secretos de producción en `.dev.vars`; ese archivo se ignora en Git. Para secretos de producción use Wrangler; para secretos de Previews use la configuración de Preview correspondiente.
+Wrangler local mode uses local storage. Never use production secrets in `.dev.vars`; Git ignores this file. Use Wrangler secrets for production and the appropriate Preview configuration for Preview secrets.
 
-## Billing y entitlements
+## Billing and entitlements
 
-Stripe Checkout/webhooks y Google Play verify/RTDN publican entitlements normalizados ligados al tenant. El backend valida la firma de Stripe y verifica tokens Play con Android Publisher antes de conceder acceso; el bridge móvil completa una compra solo después de la respuesta verificada. Cada proveedor queda detrás de su adaptador, y la resolución del plan aplica sus cuotas D1.
+Stripe Checkout/webhooks and Google Play verification/RTDN publish provider-neutral entitlements linked to a tenant. The backend validates Stripe signatures and verifies Play tokens through the Android Publisher API before granting access. The mobile bridge completes a purchase only after the server confirms verification and processing. Each provider is behind an adapter, and plan resolution applies its D1 quota policy.
 
-## Módulos opcionales
+## Optional modules
 
-OpenRouter, Resend, Stripe, Google Play y Flutter se habilitan/configuran por CLI. Cada proveedor está detrás de un adaptador; el build funciona sin credenciales. Admin solo opera sobre el tenant activo y exige `admin.manage`; no hay rol de superadmin multi-tenant.
+OpenRouter, Resend, Stripe, Google Play, and Flutter can be selected/configured with the CLI. Each provider is behind an adapter; builds do not require provider credentials. Admin operations are scoped to the active tenant and require `admin.manage`; there is no cross-tenant superadmin role.
